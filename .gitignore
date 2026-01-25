@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.Python
+
+# Virtual Environment - DO NOT COMMIT
+.venv/
+venv/
+ENV/
+env/
+backend/.venv/
+backend/venv/
+
+# Node
+node_modules/
+.next/
+out/
+.cache/
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.production.local
+.env.development.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
