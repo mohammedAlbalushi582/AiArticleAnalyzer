@@ -159,7 +159,7 @@ export const authOptions: NextAuthOptions = {
         token.refreshToken = user.refreshToken;
         token.provider = account?.provider || "credentials";
         token.djangoId = user.djangoId;
-        token.accessTokenExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+        token.accessTokenExpires = Date.now() + 7 * 24 * 60 * 60 * 1000;
       }
 
       if (Date.now() < (token.accessTokenExpires as number)) {

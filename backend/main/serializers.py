@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from .models import articleUrl
 
 class UserSerializer(serializers.ModelSerializer):
     name = serializers.SerializerMethodField(read_only=True)
@@ -62,3 +62,10 @@ class RegisterSerliazer(serializers.ModelSerializer):
                 first_name=validate_data.get('first_name', ''),
         )
         return user
+
+
+class ArticleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = articleUrl
+        fields = '__all__'
+

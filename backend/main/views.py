@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from .serializers import *
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -75,3 +76,16 @@ def getRoutes(request):
     return Response('hello')
 
 
+
+
+@csrf_exempt 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def articlePost(request):
+    print("📥 Received data:", request.user) 
+    
+    return Response({
+        'success': True,
+        'message': 'Article posted successfully!',
+        'data': request.data
+    }, status=status.HTTP_201_CREATED)
