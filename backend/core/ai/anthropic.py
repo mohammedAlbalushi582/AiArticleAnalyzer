@@ -47,7 +47,7 @@ class AnthropicAnalyzer(Analyzer):
 
         try:
             message = self.client.messages.create(
-                model="claude-3-5-haiku-latest",
+                model="claude-3-5-sonnet-20241022",
                 max_tokens=1024,
                 messages=[
                     {"role": "user", "content": ANALYSIS_PROMPT + truncated},
@@ -91,7 +91,7 @@ class AnthropicAnalyzer(Analyzer):
 
         try:
             message = self.client.messages.create(
-                model="claude-3-5-haiku-latest",
+                model="claude-3-5-sonnet-20241022",
                 max_tokens=1024,
                 system=system,
                 messages=messages,
