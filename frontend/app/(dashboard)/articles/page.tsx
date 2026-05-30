@@ -77,7 +77,7 @@ export default function ArticlesPage() {
                     <CardTitle className="text-lg line-clamp-1">{article.title}</CardTitle>
                     <CardDescription className="line-clamp-2">{article.summary}</CardDescription>
                   </CardHeader>
-                  <CardContent className="flex items-center justify-between">
+                  <CardContent className="flex flex-wrap items-center justify-between gap-2">
                     <div className="flex gap-2 flex-wrap">
                       {article.tags.slice(0, 4).map((tag) => (
                         <Badge key={tag} variant="secondary">

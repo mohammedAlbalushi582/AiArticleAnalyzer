@@ -159,8 +159,8 @@ export default function ArticleDetailPage() {
       </div>
 
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">{article.title}</h1>
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 break-words">{article.title}</h1>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           {!isOwner && <span>by {article.author_name}</span>}
           <span>{new Date(article.created_at).toLocaleDateString()}</span>
           {article.source_url && (
@@ -190,7 +190,7 @@ export default function ArticleDetailPage() {
       </div>
 
       <Tabs defaultValue="summary" className="space-y-6">
-        <TabsList>
+        <TabsList className="max-w-full justify-start overflow-x-auto">
           <TabsTrigger value="summary">Summary</TabsTrigger>
           <TabsTrigger value="key-points">Key Points</TabsTrigger>
           <TabsTrigger value="original">Original Text</TabsTrigger>
