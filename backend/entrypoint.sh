@@ -2,7 +2,10 @@
 set -e
 
 echo "Waiting for PostgreSQL..."
-while ! python -c "import socket; s = socket.socket(); s.settimeout(1); s.connect(('db', 5432)); s.close()" 2>/dev/null; do
+# A real connection, not just a port probe: Postgres opens its port before it
+# can accept queries ("the database system is starting up"), so a TCP check
+# passes too early and migrations crash the container.
+while ! python -c "import os, psycopg2; psycopg2.connect(os.environ['DATABASE_URL']).close()" 2>/dev/null; do
     sleep 1
 done
 echo "PostgreSQL is ready."

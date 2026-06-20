@@ -1,6 +1,6 @@
 import logging
 
-from core.ai.anthropic import AnthropicAnalyzer
+from core.ai.gemini import GeminiAnalyzer
 from core.scraper.extract import extract_article
 
 from .models import Article
@@ -15,7 +15,7 @@ def analyze_article(user=None, session_key=None, url: str = "", text: str = "") 
         raw_text = text
         title = text[:80].split("\n")[0] or "Untitled"
 
-    analyzer = AnthropicAnalyzer()
+    analyzer = GeminiAnalyzer()
     result = analyzer.analyze(raw_text)
 
     article = Article.objects.create(

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "apps.articles",
     "apps.notes",
     "apps.chat",
+    "apps.comparisons",
 ]
 
 MIDDLEWARE = [
@@ -128,8 +129,9 @@ CORS_ALLOW_HEADERS = [
     "x-session-id",
 ]
 
-# Anthropic
+# AI providers
 ANTHROPIC_API_KEY = env("ANTHROPIC_API_KEY", default="")
+GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
 
 # Spectacular
 SPECTACULAR_SETTINGS = {

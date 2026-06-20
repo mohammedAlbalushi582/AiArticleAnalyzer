@@ -1,7 +1,7 @@
 import logging
 
 from apps.articles.models import Article
-from core.ai.anthropic import AnthropicAnalyzer
+from core.ai.gemini import GeminiAnalyzer
 
 from .models import ChatMessage
 
@@ -46,7 +46,7 @@ def send_chat_message(
 
     # Build article context and call AI
     system_prompt = build_article_context(article)
-    analyzer = AnthropicAnalyzer()
+    analyzer = GeminiAnalyzer()
     assistant_content = analyzer.chat(system_prompt=system_prompt, messages=messages)
 
     # Save and return assistant message

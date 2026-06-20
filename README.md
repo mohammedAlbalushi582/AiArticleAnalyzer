@@ -7,7 +7,7 @@ A full-stack web application that lets users submit articles (via URL or pasted 
 - **Frontend:** Next.js 14 (App Router), TypeScript, Tailwind CSS, shadcn/ui
 - **Backend:** Django 5 + Django REST Framework
 - **Database:** PostgreSQL
-- **AI:** Anthropic Claude API (`claude-sonnet-4-5`)
+- **AI:** Google Gemini API (`gemini-2.5-flash`)
 - **Auth:** JWT via `djangorestframework-simplejwt`
 - **Article extraction:** `readability-lxml` + `requests`
 - **Containerization:** Docker + Docker Compose
@@ -127,6 +127,10 @@ npm run dev
 | GET | `/api/notes/{article_id}/` | Get note for article |
 | PUT | `/api/notes/{article_id}/` | Create/update note |
 | DELETE | `/api/notes/{article_id}/` | Delete note |
+| POST | `/api/comparisons/` | Detect contradictions across 2–10 articles (`{article_ids}`) |
+| GET | `/api/comparisons/` | List contradiction reports |
+| GET | `/api/comparisons/{id}/` | Get a contradiction report |
+| DELETE | `/api/comparisons/{id}/` | Delete a contradiction report |
 | GET | `/api/schema/swagger-ui/` | Swagger API docs |
 
 ## Running Tests
@@ -140,7 +144,8 @@ pytest -v
 ## Features
 
 - **Article Analysis:** Submit via URL (auto-extracts content) or paste text directly
-- **AI-Powered:** Claude generates summaries, key points, and topic tags
+- **AI-Powered:** Gemini generates summaries, key points, and topic tags
+- **Contradiction Detector:** Compare 2–10 articles on a topic; a two-pass AI analysis surfaces where authors directly contradict each other, with verified side-by-side quotes and a severity score
 - **Article Library:** Browse, search, and manage analyzed articles
 - **Notes Workspace:** Markdown notes editor with auto-save per article
 - **Dark Mode:** System-aware theme toggle

@@ -190,3 +190,44 @@ export type PaginatedResponse<T> = {
   previous: string | null;
   results: T[];
 };
+
+export type Severity = "high" | "medium" | "low";
+
+export type ContradictionPosition = {
+  article_id: number;
+  article_title: string;
+  stance: string;
+  quote: string;
+};
+
+export type Contradiction = {
+  topic: string;
+  explanation: string;
+  severity: Severity;
+  severity_score: number | null;
+  verification_reason?: string;
+  positions: ContradictionPosition[];
+};
+
+export type ComparisonResult = {
+  contradictions: Contradiction[];
+  article_count: number;
+  candidate_count: number;
+  confirmed_count: number;
+};
+
+export type ComparisonReport = {
+  id: number;
+  title: string;
+  articles: { id: number; title: string }[];
+  result: ComparisonResult;
+  created_at: string;
+};
+
+export type ComparisonListItem = {
+  id: number;
+  title: string;
+  article_count: number;
+  contradiction_count: number;
+  created_at: string;
+};

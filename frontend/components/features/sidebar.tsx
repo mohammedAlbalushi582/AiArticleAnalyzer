@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Compass, FileText, LogIn, LogOut, Menu, Moon, PlusCircle, Sun, UserPlus, X } from "lucide-react";
+import { Compass, FileText, GitCompareArrows, LogIn, LogOut, Menu, Moon, PlusCircle, Sun, UserPlus, X } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 const navItems = [
   { href: "/new", label: "Analyze Article", icon: PlusCircle },
   { href: "/articles", label: "My Articles", icon: FileText },
+  { href: "/compare", label: "Compare", icon: GitCompareArrows },
   { href: "/explore", label: "Explore", icon: Compass },
 ];
 
