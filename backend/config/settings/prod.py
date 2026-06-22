@@ -2,6 +2,12 @@ from .base import *  # noqa: F401, F403
 
 DEBUG = False
 
+# Let WhiteNoise compress and cache-bust static files (hashed filenames).
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+}
+
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SESSION_COOKIE_SECURE = True
