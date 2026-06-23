@@ -17,8 +17,10 @@ MODEL = "gemini-3.5-flash"
 # Google returns these when the model is transiently overloaded/unavailable.
 # They usually clear within a second or two, so retry with backoff instead of
 # failing the user's request on the first hiccup.
+# Total retry time MUST stay under gunicorn's --timeout (120s) or the worker
+# gets force-killed mid-request. Worst case here ~= 35s + 1s + 35s = 71s.
 TRANSIENT_CODES = {429, 500, 502, 503, 504}
-MAX_RETRIES = 3
+MAX_RETRIES = 2
 
 CHAT_SYSTEM_PROMPT = """You are a helpful assistant that answers questions about a specific article. \
 The article content is provided below. Answer the user's questions based on the article — explain terms, \
@@ -128,10 +130,11 @@ class GeminiAnalyzer(Analyzer):
     def __init__(self):
         # Cap each HTTP call so a stalled Gemini request fails fast instead of
         # hanging until gunicorn force-kills the worker (its --timeout is 120s).
+        # Kept low so MAX_RETRIES attempts still fit inside that budget.
         # HttpOptions.timeout is in milliseconds.
         self.client = genai.Client(
             api_key=settings.GEMINI_API_KEY,
-            http_options=types.HttpOptions(timeout=60_000),
+            http_options=types.HttpOptions(timeout=35_000),
         )
 
     def _generate(self, **kwargs):

@@ -87,9 +87,23 @@ export async function apiFetch<T = unknown>(
 
   if (res.status === 204) return undefined as T;
 
-  const data = await res.json();
+  let data: unknown;
+  try {
+    data = await res.json();
+  } catch {
+    // Non-JSON response (e.g. a proxy 502/504 HTML error page when the
+    // backend is slow or down). Surface a readable message instead of the
+    // cryptic "Unexpected token '<'".
+    throw new Error(
+      res.ok
+        ? "Received an invalid response from the server. Please try again."
+        : "The server is busy or unavailable right now. Please try again in a moment."
+    );
+  }
+
   if (!res.ok) {
-    const message = data?.error?.message || data?.detail || "Something went wrong";
+    const err = data as { error?: { message?: unknown }; detail?: unknown };
+    const message = err?.error?.message || err?.detail || "Something went wrong";
     throw new Error(typeof message === "string" ? message : JSON.stringify(message));
   }
 
