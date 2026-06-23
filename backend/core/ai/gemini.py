@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 
 from django.conf import settings
 from google import genai
@@ -11,7 +12,13 @@ from .base import AnalysisResult, Analyzer
 
 logger = logging.getLogger(__name__)
 
-MODEL = "gemini-2.5-flash"
+MODEL = "gemini-3.5-flash"
+
+# Google returns these when the model is transiently overloaded/unavailable.
+# They usually clear within a second or two, so retry with backoff instead of
+# failing the user's request on the first hiccup.
+TRANSIENT_CODES = {429, 500, 502, 503, 504}
+MAX_RETRIES = 3
 
 CHAT_SYSTEM_PROMPT = """You are a helpful assistant that answers questions about a specific article. \
 The article content is provided below. Answer the user's questions based on the article — explain terms, \
@@ -127,12 +134,29 @@ class GeminiAnalyzer(Analyzer):
             http_options=types.HttpOptions(timeout=60_000),
         )
 
+    def _generate(self, **kwargs):
+        """Call generate_content, retrying transient (overload) errors."""
+        for attempt in range(MAX_RETRIES):
+            try:
+                return self.client.models.generate_content(**kwargs)
+            except errors.APIError as e:
+                code = getattr(e, "code", None)
+                if code in TRANSIENT_CODES and attempt < MAX_RETRIES - 1:
+                    backoff = 2**attempt  # 1s, 2s
+                    logger.warning(
+                        "Gemini %s (transient), retrying in %ss (attempt %s/%s)",
+                        code, backoff, attempt + 1, MAX_RETRIES,
+                    )
+                    time.sleep(backoff)
+                    continue
+                raise
+
     def analyze(self, text: str) -> AnalysisResult:
         # Truncate to reduce API costs
         truncated = text[:15000] if len(text) > 15000 else text
 
         try:
-            message = self.client.models.generate_content(
+            message = self._generate(
                 model=MODEL,
                 contents=ANALYSIS_PROMPT + truncated,
                 config=types.GenerateContentConfig(
@@ -142,9 +166,13 @@ class GeminiAnalyzer(Analyzer):
                 ),
             )
         except errors.APIError as e:
-            if getattr(e, "code", None) == 429:
+            code = getattr(e, "code", None)
+            if code == 429:
                 logger.warning("Gemini rate limit hit")
                 raise AnalysisFailed("Rate limit reached. Please try again shortly.")
+            if code in TRANSIENT_CODES:
+                logger.warning("Gemini overloaded (%s) after retries", code)
+                raise AnalysisFailed("The AI service is busy right now. Please try again in a moment.")
             logger.error("Gemini API error: %s", e)
             raise AnalysisFailed()
         except Exception as e:
@@ -195,7 +223,7 @@ class GeminiAnalyzer(Analyzer):
         ]
 
         try:
-            message = self.client.models.generate_content(
+            message = self._generate(
                 model=MODEL,
                 contents=contents,
                 config=types.GenerateContentConfig(
