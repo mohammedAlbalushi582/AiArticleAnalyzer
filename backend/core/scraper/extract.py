@@ -23,7 +23,9 @@ def extract_article(url: str) -> tuple[str, str]:
     Returns (title, plain_text).
     """
     try:
-        response = requests.get(url, headers=HEADERS, timeout=15)
+        # (connect, read): fail fast on unreachable hosts, but give slow/heavy
+        # pages time to send the body before giving up.
+        response = requests.get(url, headers=HEADERS, timeout=(10, 30))
         response.raise_for_status()
     except requests.RequestException as e:
         logger.error("Failed to fetch %s: %s", url, e)
