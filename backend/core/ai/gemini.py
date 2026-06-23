@@ -119,7 +119,13 @@ def _render_articles(articles: list[dict], char_limit: int = 8000) -> str:
 
 class GeminiAnalyzer(Analyzer):
     def __init__(self):
-        self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        # Cap each HTTP call so a stalled Gemini request fails fast instead of
+        # hanging until gunicorn force-kills the worker (its --timeout is 120s).
+        # HttpOptions.timeout is in milliseconds.
+        self.client = genai.Client(
+            api_key=settings.GEMINI_API_KEY,
+            http_options=types.HttpOptions(timeout=60_000),
+        )
 
     def analyze(self, text: str) -> AnalysisResult:
         # Truncate to reduce API costs
@@ -141,6 +147,11 @@ class GeminiAnalyzer(Analyzer):
                 raise AnalysisFailed("Rate limit reached. Please try again shortly.")
             logger.error("Gemini API error: %s", e)
             raise AnalysisFailed()
+        except Exception as e:
+            # Network timeouts/stalls aren't APIErrors — without this they'd
+            # bubble up as a 500 (or hang the worker). Surface a clean message.
+            logger.error("Gemini request failed: %s", e)
+            raise AnalysisFailed("AI analysis timed out. Please try again.")
 
         raw = message.text
         if not raw:
